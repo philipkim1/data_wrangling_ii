@@ -1,7 +1,7 @@
 ---
-title: "Reading data from the Web"
+title: "Strings and Factors"
 author: "Philip Kim"
-date: "10/19/2021"
+date: "10/21/2021"
 output: github_document
 ---
 
@@ -24,113 +24,57 @@ scale_colour_discrete = scale_colour_viridis_d
 scale_fill_discrete = scale_fill_viridis_d
 ```
 
-## NSUDH data
+```{r}
+string_vec = c("my", "name", "is", "jeff")
+
+str_detect(string_vec, "m")
+str_replace(string_vec, "jeff", "Jeff")
+```
 
 ```{r}
-url = "http://samhda.s3-us-gov-west-1.amazonaws.com/s3fs-public/field-uploads/2k15StateFiles/NSDUHsaeShortTermCHG2015.htm"
+string_vec = c(
+  "i think we all rule for participating",
+  "i think i have been caught",
+  "i think this will be quite fun actually",
+  "it will be fun, i think"
+)
 
-drug_use_html = 
-  read_html(url)
+str_detect(string_vec, "^i think") #24:00
+str_detect(string_vec, "i think$")
 
-drug_use_df = 
-  drug_use_html %>% 
-  html_table() %>% 
-  first() %>% 
-  slice(-1)
+```
+
+```{r}
+string_vec = c(
+  "Y'all remember Pres. HW Bush?",
+  "I saw a green bush",
+  "BBQ and Bushwalking at Molonglo Gorge",
+  "BUSH -- LIVE IN CONCERT!!"
+  )
+
+str_detect(string_vec, "[Bb]ush") #25:54
 ```
 
 
-## Star wars
-
-Get some star wars data ...
-
 ```{r}
-sw_url = "https://www.imdb.com/list/ls070150896/"
+string_vec = c(
+  '7th inning stretch',
+  '1st half soon to begin. Texas won the toss.',
+  'she is 5 feet 4 inches tall',
+  '3AM - cant sleep :('
+  )
 
-sw_html = 
-  read_html(sw_url)
-
-sw_titles = 
-  sw_html %>% 
-  html_elements(".lister-item-header a") %>% 
-  html_text()
-
-sw_revenue = 
-  sw_html %>% 
-  html_elements(".text-muted .ghost~ .text-muted+ span") %>% 
-  html_text()
-
-sw_df = 
-  tibble(
-    title = sw_titles,
-    revenue = sw_revenue)
+str_detect(string_vec, "[0-9][a-zaA-Z]")
 ```
 
-## Napoleon Dynamite
-
-Dynamite Reviews
-
 ```{r}
-dynamite_url = "https://www.amazon.com/product-reviews/B00005JNBQ/ref=cm_cr_arp_d_viewopt_rvwer?ie=UTF8&reviewerType=avp_only_reviews&sortBy=recent&pageNumber=1"
+string_vec = c(
+  'Its 7:11 in the evening',
+  'want to go to 7-11?',
+  'my flight is AA711',
+  'NetBios: scanning ip 203.167.114.66'
+  )
 
-dynamite_html = 
-  read_html(dynamite_url)
-
-dynamite_review_titles =
-  dynamite_html %>% 
-  html_elements(".a-text-bold span") %>% 
-  html_text()
-
-dynamite_stars = 
-  dynamite_html %>% 
-  html_elements("#cm_cr-review_list .review-rating") %>% 
-  html_text()
-
-dynamite_df =
-  tibble(
-    titles = dynamite_review_titles,
-    stars = dynamite_stars)
-```
-
-
-## Try some APIs
-
-Get some data from an API about water.
-
-```{r}
-water_df =
-  GET("https://data.cityofnewyork.us/resource/ia2d-e54m.csv") %>% 
-  content()
-```
-
-Let's see what jSON looks like
-
-```{r}
-water_df =
-  GET("https://data.cityofnewyork.us/resource/ia2d-e54m.json") %>% 
-  content("text") %>% 
-  jsonlite::fromJSON() %>% 
-  as_tibble()
-```
-
-BRFSS data via API
-
-```{r}
-brfss_df =
-  GET("https://chronicdata.cdc.gov/resource/acme-vg9e.csv",
-      query = list("$limit" = 5000)) %>% 
-  content()
-```
-
-What about pokemon..
-
-```{r}
-poke_data = 
-  GET("https://pokeapi.co/api/v2/pokemon/1") %>% 
-  content()
-
-poke_data[["name"]]
-poke_data[["height"]]
-poke_data[["abilities"]]
+str_detect(string_vec, "7.11")
 ```
 
