@@ -127,8 +127,79 @@ Do dataframe stuff
 ``` r
 marj_df %>% 
   filter(age == "12-17") %>% 
+  mutate(
+    State = fct_reorder(State, percent)) %>%  #51:00
   ggplot(aes(x = State, y = percent, color = year)) +
   geom_point()
 ```
 
 <img src="reading_from_web_files/figure-gfm/unnamed-chunk-9-1.png" width="90%" />
+
+## Restaurant Inspections
+
+``` r
+data("rest_inspec")
+```
+
+``` r
+rest_inspec %>% 
+  janitor::tabyl(boro, grade)
+```
+
+    ##           boro     A     B    C Not Yet Graded   P    Z   NA_
+    ##          BRONX 13688  2801  701            200 163  351 16833
+    ##       BROOKLYN 37449  6651 1684            702 416  977 51930
+    ##      MANHATTAN 61608 10532 2689            765 508 1237 80615
+    ##        Missing     4     0    0              0   0    0    13
+    ##         QUEENS 35952  6492 1593            604 331  913 45816
+    ##  STATEN ISLAND  5215   933  207             85  47  149  6730
+
+``` r
+rest_inspec = 
+  rest_inspec %>% 
+  filter(
+    str_detect(grade, "[ABC]"),
+    !(boro == "Missing")) %>% 
+  mutate(
+    boro = str_to_title(boro))
+```
+
+``` r
+rest_inspec %>% 
+  filter(str_detect(dba, "[Pp][Ii][Zz][Zz][Aa]")) %>% 
+  janitor::tabyl(boro, grade)
+```
+
+    ##           boro    A   B  C
+    ##          Bronx 1170 305 56
+    ##       Brooklyn 1948 296 61
+    ##      Manhattan 1983 420 76
+    ##         Queens 1647 259 48
+    ##  Staten Island  323 127 21
+
+``` r
+rest_inspec %>% 
+  filter(str_detect(dba, "[Pp][Ii][Zz][Zz][Aa]")) %>% 
+  mutate(
+    boro = fct_infreq(boro) #1:06:00
+  ) %>% 
+  ggplot(aes(x = boro, fill = grade)) +
+  geom_bar()
+```
+
+<img src="reading_from_web_files/figure-gfm/unnamed-chunk-14-1.png" width="90%" />
+
+What about changing a label
+
+``` r
+rest_inspec %>% 
+  filter(str_detect(dba, "[Pp][Ii][Zz][Zz][Aa]")) %>% 
+  mutate(
+    boro = fct_infreq(boro),
+    boro = fct_recode(boro, "The City" = "Manhattan")
+  ) %>% 
+  ggplot(aes(x = boro, fill = grade)) +
+  geom_bar()
+```
+
+<img src="reading_from_web_files/figure-gfm/unnamed-chunk-15-1.png" width="90%" />
